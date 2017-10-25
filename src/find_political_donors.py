@@ -19,7 +19,7 @@ class MedianList:
     """
     def __init__(self):
         """
-            Maintain two heaps, 
+            Initialize with two heaps, 
             high_heap stores larger half of the list,
             low_heap stores the other half.
         """
@@ -54,7 +54,6 @@ class MedianList:
             Returns total amount of transactions.
         """
         return sum(self.high_heap) - sum(self.low_heap)
-        
 
 def process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_zip):
     """
@@ -131,7 +130,6 @@ def process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_z
         # We will deal with it at the end of the program.
         recipient_date_pair[(data[0],data[2])].append(data[3])
     
-
 def is_valid_date(s):
     """
         Returns True if s is a valid MMDDYYYY format, False otherwise
@@ -152,7 +150,8 @@ def customRound(num):
         But the code challenge requires always round 0.5 to 1.
         So we implement customRound function.
     """
-    return ceil(num) if (num%1) >= 0.5 else round(num)
+    result = ceil(num) if (num%1) >= 0.5 else round(num)
+    return int(result)
 
 def main_func(input_file_path, output_file_path_by_zip, output_file_path_by_date):
     recipient_zip_pair = defaultdict(MedianList)        # Key: (CMTE_ID, ZIPCODE), Value: MedianList
@@ -192,16 +191,17 @@ def main_func(input_file_path, output_file_path_by_zip, output_file_path_by_date
 
 if __name__ == "__main__":
     import sys
+
     if len(sys.argv) < 4:
         print("Not all three file paths found(1 input and 2 output)...\n")
         print("Using default file paths instead...\n")
-#        input_file_path = 'input\itcont.txt'
-#        output_file_path_by_zip = 'output\medianvals_by_zip.txt'
-#        output_file_path_by_date = 'output\medianvals_by_date.txt'
+        input_file_path = 'input\itcont.txt'
+        output_file_path_by_zip = 'output\medianvals_by_zip.txt'
+        output_file_path_by_date = 'output\medianvals_by_date.txt'
         
-        input_file_path = 'indiv16\input\date\itcont_2016_10151005_20150726.txt'
-        output_file_path_by_zip = 'indiv16\output\\2016_10151005_20150726_medianvals_by_zip.txt'
-        output_file_path_by_date = 'indiv16\output\\2016_10151005_20150726_medianvals_by_date.txt'
+#        input_file_path = 'indiv16\input\date\itcont_2016_10151005_20150726.txt'
+#        output_file_path_by_zip = 'indiv16\output\\2016_10151005_20150726_medianvals_by_zip.txt'
+#        output_file_path_by_date = 'indiv16\output\\2016_10151005_20150726_medianvals_by_date.txt'
         
 #        input_file_path = 'indiv16\input\date\itcont_2016_invalid_dates.txt'
 #        output_file_path_by_zip = 'indiv16\output\invalid_dates_medianvals_by_zip.txt'
@@ -210,6 +210,7 @@ if __name__ == "__main__":
         input_file_path = sys.argv[1]
         output_file_path_by_zip = sys.argv[2]
         output_file_path_by_date = sys.argv[3]
+
     main_func(input_file_path, output_file_path_by_zip, output_file_path_by_date)
         
 
