@@ -1,7 +1,43 @@
+"""
+    This is my solution to the Insight Data Engineering Code Challenge, for the January 2018 session.
+    
+    The description of the problem can be found at 
+    https://github.com/InsightDataScience/find-political-donors
+    
+    Description of the solution:
+        
+    0. This solution only uses Python3 standard libraries.
+
+    1. Two dictionaries are used to store the information of donations 
+        when parsing the input file line by line.
+        (a) recipient_zip_pair: the key is (recipient, zipcode), 
+            and the value is a MedianList instance (for the detail of the class, see below).
+        (b) recipient_date_pair: the key is (recipient, date), 
+            and the value is a list that stores all corresponding transactions.
+    
+    2. The input file is read line by line. Here buffering is set to -1, 
+        which is the system default value, when opening the input file.
+    
+    3. For each line, first validate the data. If valid, 
+        write a line to the medianvals_by_zip.txt (if zipcode is valid), 
+        and stores the data to the dictionaries.
+    
+    4. After recording all data, analyze and write to medianvals_by_date.txt.
+    
+    5. The MedianList class is used to efficiently calculate the running median. 
+        Two heaps are maintained for each (recipient, zipcode) pair: 
+        One stores the larger half of transactions, and the other one stores the rest. 
+        This class has a O(1) complexity to get the median, 
+        and O(logn) complexity to add a transaction to it.
+
+"""
+
+
 import datetime
 from math import ceil
 from collections import defaultdict
 from heapq import heappush, heappop
+
 
 class MedianList:
     """
@@ -56,6 +92,7 @@ class MedianList:
             Returns total amount of transactions.
         """
         return self.total_amt
+
 
 def process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_zip):
     """
@@ -132,6 +169,7 @@ def process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_z
         # We will deal with it at the end of the program.
         recipient_date_pair[(data[0],data[2])].append(data[3])
     
+    
 def is_valid_date(s):
     """
         Returns True if s is a valid MMDDYYYY format, False otherwise
@@ -146,6 +184,7 @@ def is_valid_date(s):
         return False
     return True
 
+
 def customRound(num):
     """
         Python by default performs bankers rounding, i.e., round half to even.
@@ -154,6 +193,7 @@ def customRound(num):
     """
     result = ceil(num) if (num%1) >= 0.5 else round(num)
     return int(result)
+
 
 def main_func(input_file_path, output_file_path_by_zip, output_file_path_by_date):
     """
