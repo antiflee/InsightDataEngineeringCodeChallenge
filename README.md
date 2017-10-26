@@ -1,11 +1,13 @@
-### This is my solution to the Insight Data Engineering Code Challenge, for the January 2018 session.
+### This is my Python3 solution to the Insight Data Engineering Code Challenge, for the January 2018 session.
 #### by Y. Liu
 
 #### The description of the problem can be found at https://github.com/InsightDataScience/find-political-donors
 
-The python script is `src/find_political_donors.py`. To execute, run *./run.sh*. No "exotic" packages needed.
+The python3 script is `src/find_political_donors.py`. To execute, run *./run.sh*. No "exotic" packages needed.
 
 #### Description of the solution:
+
+0. The solution only uses Python3 standard libraries.
 
 1. Two dictionaries are used to store the information of donations when parsing the input file line by line.
     * *recipient_zip_pair*: the key is (recipient, zipcode), and the value is a MedianList instance (for the detail of the class, see below).
