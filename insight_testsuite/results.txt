@@ -1,3 +1,0 @@
-[Wed Oct 25 21:06:22 EDT 2017] 1 of 2 tests passed
-[Wed Oct 25 21:06:42 EDT 2017] 2 of 2 tests passed
-[Wed Oct 25 21:07:36 EDT 2017] 2 of 2 tests passed
