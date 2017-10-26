@@ -7,10 +7,9 @@ The python script is `src/find_political_donors.py`. To execute, run *./run.sh*.
 
 #### Description of the solution:
 
-
-1. Two dictionaries are used to store the information when parsing the input file line by line.
-    (a) *recipient_zip_pair*, where the key is (recipient, zipcode), and the value is a MedianList instance.
-    (b) *recipient_date_pair*, where the key is (recipient, date), and the value is a list that stores all corresponding transactions.
+1. Two dictionaries are used to store the information of donations when parsing the input file line by line.
+    * *recipient_zip_pair*: the key is (recipient, zipcode), and the value is a MedianList instance (for the detail of the class, see below).
+    * *recipient_date_pair*: the key is (recipient, date), and the value is a list that stores all corresponding transactions.
 
 2. The input file is read line by line. Here *buffering* is set to *-1*, which is the system default value, when opening the input file.
 
