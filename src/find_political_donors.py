@@ -25,6 +25,7 @@ class MedianList:
         """
         self.high_heap = []
         self.low_heap = []
+        self.total_amt = 0
 
     def addNumber(self, n):
         """
@@ -34,6 +35,7 @@ class MedianList:
         heappush(self.low_heap, -heappop(self.high_heap))
         if len(self.high_heap) < len(self.low_heap):
             heappush(self.high_heap, -heappop(self.low_heap))
+        self.total_amt += n
 
     def getMedian(self):
         """
@@ -53,7 +55,7 @@ class MedianList:
         """
             Returns total amount of transactions.
         """
-        return sum(self.high_heap) - sum(self.low_heap)
+        return self.total_amt
 
 def process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_zip):
     """
@@ -154,14 +156,26 @@ def customRound(num):
     return int(result)
 
 def main_func(input_file_path, output_file_path_by_zip, output_file_path_by_date):
-    recipient_zip_pair = defaultdict(MedianList)        # Key: (CMTE_ID, ZIPCODE), Value: MedianList
-    recipient_date_pair = defaultdict(list)             # Key: (CMTE_ID, DATE), Value: [transaction]
+    """
+        Main function.
+        1. Read the input file from input_file_path, line by line.
+        2. For each line read, adopt the process() function to parse it.
+        3. After recording all lines, analyze and write the result to medianvals_by_date.txt
+    """
+    # This dictionary stores all the donations to a (CMTE_ID, ZIPCODE) pair.
+    # Key: (CMTE_ID, ZIPCODE), Value: MedianList
+    recipient_zip_pair = defaultdict(MedianList)    
+
+    # This dictionary stores all the donations to a (CMTE_ID, Date) pair.
+    # Key: (CMTE_ID, DATE), Value: [transaction]
+    recipient_date_pair = defaultdict(list)             
+    
     
     with open(input_file_path, 'r', buffering=-1) as input_file:
         for line in input_file:
             process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_zip)
     
-    # Write medianvals_by_date.txt
+    # Write to medianvals_by_date.txt
     with open(output_file_path_by_date, 'w') as output_file_date:
         for key in sorted(recipient_date_pair.keys()):
             val = recipient_date_pair[key]
@@ -198,14 +212,6 @@ if __name__ == "__main__":
         input_file_path = 'input\itcont.txt'
         output_file_path_by_zip = 'output\medianvals_by_zip.txt'
         output_file_path_by_date = 'output\medianvals_by_date.txt'
-        
-#        input_file_path = 'indiv16\input\date\itcont_2016_10151005_20150726.txt'
-#        output_file_path_by_zip = 'indiv16\output\\2016_10151005_20150726_medianvals_by_zip.txt'
-#        output_file_path_by_date = 'indiv16\output\\2016_10151005_20150726_medianvals_by_date.txt'
-        
-#        input_file_path = 'indiv16\input\date\itcont_2016_invalid_dates.txt'
-#        output_file_path_by_zip = 'indiv16\output\invalid_dates_medianvals_by_zip.txt'
-#        output_file_path_by_date = 'indiv16\output\invalid_dates_medianvals_by_date.txt'
     else:
         input_file_path = sys.argv[1]
         output_file_path_by_zip = sys.argv[2]
