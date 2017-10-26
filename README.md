@@ -3,7 +3,7 @@
 
 #### The description of the problem can be found at https://github.com/InsightDataScience/find-political-donors
 
-The python script is `src/find_political_donors.py`. To execute, run *./run.sh*.
+The python script is `src/find_political_donors.py`. To execute, run *./run.sh*. No "exotic" packages needed.
 
 #### Description of the solution:
 
