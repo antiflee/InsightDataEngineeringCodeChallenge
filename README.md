@@ -14,6 +14,8 @@ The python script is `src/find_political_donors.py`. To execute, run *./run.sh*.
 
 2. The input file is read line by line. Here *buffering* is set to *-1*, which is the system default value, when opening the input file.
 
-3. For each line, first validate the data. If valid, write a line to the medianvals_by_zip.txt (if zipcode is valid), and stores the data to the dictionaries.
+3. For each line, first validate the data. If valid, write a line to the *medianvals_by_zip.txt* (if zipcode is valid), and stores the data to the dictionaries.
 
-4. The MedianList class is used to efficiently calculate the running median. Two heaps are maintained for each (recipient, zipcode) pair: One stores the larger half of transactions, and the other one stores the rest. This class has a *O(1)* complexity to get the median, and *O(logn)* complexity to add a transaction to it.
+4. After recording all data, analyze and write to *medianvals_by_date.txt*.
+
+5. The MedianList class is used to efficiently calculate the running median. Two heaps are maintained for each (recipient, zipcode) pair: One stores the larger half of transactions, and the other one stores the rest. This class has a *O(1)* complexity to get the median, and *O(logn)* complexity to add a transaction to it.
