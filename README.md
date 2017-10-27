@@ -3,11 +3,9 @@
 
 #### The description of the problem can be found at https://github.com/InsightDataScience/find-political-donors
 
-The python3 script is `src/find_political_donors.py`. To execute, run *./run.sh*. No "exotic" packages needed.
-
 #### Description of the solution:
 
-0. The solution only uses Python3 standard libraries.
+0. The solution only uses Python3 standard libraries. The python3 script is `src/find_political_donors.py`. To execute, run `./run.sh`. No "exotic" packages needed.
 
 1. Two dictionaries are used to store the information of donations when parsing the input file line by line.
     * *recipient_zip_pair*: the key is (recipient, zipcode), and the value is a MedianList instance (for the detail of the class, see below).
