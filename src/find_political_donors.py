@@ -1,33 +1,36 @@
 """
     This is my solution to the Insight Data Engineering Code Challenge, for the January 2018 session.
-    
-    The description of the problem can be found at 
+
+    The description of the problem can be found at
     https://github.com/InsightDataScience/find-political-donors
-    
+
+    The repo of this solution:
+    https://github.com/antiflee/InsightDataEngineeringCodeChallenge
+
     Description of the solution:
-        
+
     0. This solution only uses Python3 standard libraries.
 
-    1. Two dictionaries are used to store the information of donations 
+    1. Two dictionaries are used to store the information of donations
         when parsing the input file line by line.
-        (a) recipient_zip_pair: the key is (recipient, zipcode), 
+        (a) recipient_zip_pair: the key is (recipient, zipcode),
             and the value is a MedianList instance (for the detail of the class, see below).
-        (b) recipient_date_pair: the key is (recipient, date), 
+        (b) recipient_date_pair: the key is (recipient, date),
             and the value is a list that stores all corresponding transactions.
-    
-    2. The input file is read line by line. Here buffering is set to -1, 
+
+    2. The input file is read line by line. Here buffering is set to -1,
         which is the system default value, when opening the input file.
-    
-    3. For each line, first validate the data. If valid, 
-        write a line to the medianvals_by_zip.txt (if zipcode is valid), 
+
+    3. For each line, first validate the data. If valid,
+        write a line to the medianvals_by_zip.txt (if zipcode is valid),
         and stores the data to the dictionaries.
-    
+
     4. After recording all data, analyze and write to medianvals_by_date.txt.
-    
-    5. The MedianList class is used to efficiently calculate the running median. 
-        Two heaps are maintained for each (recipient, zipcode) pair: 
-        One stores the larger half of transactions, and the other one stores the rest. 
-        This class has a O(1) complexity to get the median, 
+
+    5. The MedianList class is used to efficiently calculate the running median.
+        Two heaps are maintained for each (recipient, zipcode) pair:
+        One stores the larger half of transactions, and the other one stores the rest.
+        This class has a O(1) complexity to get the median,
         and O(logn) complexity to add a transaction to it.
 
 """
@@ -42,20 +45,20 @@ from heapq import heappush, heappop
 class MedianList:
     """
         This class is for medianvals_by_zip. To efficiently obtain the median
-        from a data stream, we need two heaps, one stores the larger half portion 
+        from a data stream, we need two heaps, one stores the larger half portion
         of the data, the other one stores the rest. We need to maintain the two
         heaps so that the high_heap is either equal to or one number longer
         than low_heap.
-        
+
         The time complexity to add a new number is O(logn), and to obtain the
         median is O(1).
-        
+
         Note here low_heap stores the "negative" value of the numbers, so that
         -heappop(low_heap) can directly give us the largest number in low_heap.
     """
     def __init__(self):
         """
-            Initialize with two heaps, 
+            Initialize with two heaps,
             high_heap stores larger half of the list,
             low_heap stores the other half.
         """
@@ -80,13 +83,13 @@ class MedianList:
         if len(self.high_heap) > len(self.low_heap):
             return self.high_heap[0]
         return (self.high_heap[0]-self.low_heap[0]) / 2
-    
+
     def getTotalNumOfTrans(self):
         """
             Returns total number of transactions.
         """
         return len(self.high_heap) + len(self.low_heap)
-    
+
     def getTotalAmtOfTrans(self):
         """
             Returns total amount of transactions.
@@ -98,7 +101,7 @@ def process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_z
     """
         input: string
         return: void
-        
+
         Process one line of data:
         1. Validate the data.
         2. Extract CMTE_ID, ZIP_CODE, TRANSACTION_DT and TRANSACTION_AMT.
@@ -108,13 +111,13 @@ def process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_z
     """
     if not line:
         return
-        
+
     raw_data = line.split('|')
-    
+
     if len(raw_data) <= 15:
         # print("Invalid data.\n\t"+line)
         return
-    
+
     if raw_data[15]:
         # Only parse the data where OTHER_ID is null
         # print("Not donated by individuals, by {} instead.".format(raw_data[15]))
@@ -122,45 +125,45 @@ def process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_z
 
     # Extract 'CMTE_ID','ZIP_CODE','TRANSACTION_DT','TRANSACTION_AMT'
     data = [raw_data[i] for i in (0,10,13,14)]
-    
+
     # If CMTE_ID or TRANSACTION_AMT is empty, don't parse the data.
     if not data[0] or not data[3]:
         return
-        
+
     # Try to convert TRANSACTION_AMT to Float
     try:
         data[3] = float(data[3])
     except Exception as e:
         # print(e)
         return
-    
+
     # Extract the first 5 digits of the zipcode
     # Invalid zipcode will be encoded as empty string
     data[1] = data[1][:5] if len(data[1]) >= 5 else ''
-    
+
     if data[1]:
         # If the zipcode is valid, deal with medianvals_by_zip
-    
+
         # First update the medianList, key = (CMTE_ID, Zipcode)
         medianList = recipient_zip_pair[(data[0],data[1])]
-        
+
         medianList.addNumber(data[3])           # Insert the new donation
-        
+
         newMedian = medianList.getMedian()
         newMedian = customRound(newMedian)      # Round the median using customRound()
-        
+
         numOfTrans = medianList.getTotalNumOfTrans()
         amtOfTrans = medianList.getTotalAmtOfTrans()
         if int(amtOfTrans) == amtOfTrans:
             amtOfTrans = int(amtOfTrans)
-        
+
         # write a line to medianvals_by_zip
         with open(output_file_path_by_zip, 'a') as output_file_zip:
             output_file_zip.write("|".join(
                                             [data[0], data[1], str(newMedian),
-                                            str(numOfTrans), str(amtOfTrans)]              
+                                            str(numOfTrans), str(amtOfTrans)]
                                         )+"\n")
-    
+
     if is_valid_date(data[2]):
         # If the date is valid, first convert the format from
         # MMDDYYYY to YYYYMMDD
@@ -168,15 +171,15 @@ def process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_z
         # save the data to recipient_date_pair
         # We will deal with it at the end of the program.
         recipient_date_pair[(data[0],data[2])].append(data[3])
-    
-    
+
+
 def is_valid_date(s):
     """
         Returns True if s is a valid MMDDYYYY format, False otherwise
     """
     if len(s) != 8:
         return False
-    
+
     try:
         datetime.datetime.strptime(s, '%m%d%Y')
     except Exception as e:
@@ -204,44 +207,44 @@ def main_func(input_file_path, output_file_path_by_zip, output_file_path_by_date
     """
     # This dictionary stores all the donations to a (CMTE_ID, ZIPCODE) pair.
     # Key: (CMTE_ID, ZIPCODE), Value: MedianList
-    recipient_zip_pair = defaultdict(MedianList)    
+    recipient_zip_pair = defaultdict(MedianList)
 
     # This dictionary stores all the donations to a (CMTE_ID, Date) pair.
     # Key: (CMTE_ID, DATE), Value: [transaction]
-    recipient_date_pair = defaultdict(list)             
-    
-    
+    recipient_date_pair = defaultdict(list)
+
+
     with open(input_file_path, 'r', buffering=-1) as input_file:
         for line in input_file:
             process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_zip)
-    
+
     # Write to medianvals_by_date.txt
     with open(output_file_path_by_date, 'w') as output_file_date:
         for key in sorted(recipient_date_pair.keys()):
             val = recipient_date_pair[key]
             if val:
                 val.sort()
-                
+
                 recipient, date = key[0], key[1]
                 # Convert date from YYYYMMDD back to MMDDYYYY
-                date = date[4:] + date[:4]                
-                
+                date = date[4:] + date[:4]
+
                 total_num_of_tran, total_amt_of_tran = len(val), sum(val)
                 if int(total_amt_of_tran) == total_amt_of_tran:
                     total_amt_of_tran = int(total_amt_of_tran)
-                
+
                 if len(val) % 2:
                     median = val[len(val)//2]
                 else:
                     median = (val[len(val)//2-1] + val[len(val)//2])/2
-                    
-                median = customRound(median)    
-                
+
+                median = customRound(median)
+
                 output_file_date.write("|".join(
-                                                [recipient, date, str(median), 
+                                                [recipient, date, str(median),
                                                 str(total_num_of_tran), str(total_amt_of_tran)]
                                         )+"\n")
-                
+
 
 if __name__ == "__main__":
     import sys
@@ -249,22 +252,12 @@ if __name__ == "__main__":
     if len(sys.argv) < 4:
         print("Not all three file paths found(1 input and 2 output)...\n")
         print("Using default file paths instead...\n")
-        input_file_path = 'input\itcont.txt'
-        output_file_path_by_zip = 'output\medianvals_by_zip.txt'
-        output_file_path_by_date = 'output\medianvals_by_date.txt'
+        input_file_path = 'input/itcont.txt'
+        output_file_path_by_zip = 'output/medianvals_by_zip.txt'
+        output_file_path_by_date = 'output/medianvals_by_date.txt'
     else:
         input_file_path = sys.argv[1]
         output_file_path_by_zip = sys.argv[2]
         output_file_path_by_date = sys.argv[3]
 
     main_func(input_file_path, output_file_path_by_zip, output_file_path_by_date)
-        
-
-
-
-
-
-
-
-
-
