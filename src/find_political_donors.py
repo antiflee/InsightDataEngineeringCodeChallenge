@@ -41,7 +41,6 @@ from math import ceil
 from collections import defaultdict
 from heapq import heappush, heappop
 
-
 class MedianList:
     """
         This class is for medianvals_by_zip. To efficiently obtain the median
@@ -96,6 +95,52 @@ class MedianList:
         """
         return self.total_amt
 
+def main_func(input_file_path, output_file_path_by_zip, output_file_path_by_date):
+    """
+        Main function.
+        1. Read the input file from input_file_path, line by line.
+        2. For each line read, adopt the process() function to parse it.
+        3. After recording all lines, analyze and write the result to medianvals_by_date.txt
+    """
+    # This dictionary stores all the donations to a (CMTE_ID, ZIPCODE) pair.
+    # Key: (CMTE_ID, ZIPCODE), Value: MedianList
+    recipient_zip_pair = defaultdict(MedianList)
+
+    # This dictionary stores all the donations to a (CMTE_ID, Date) pair.
+    # Key: (CMTE_ID, DATE), Value: [transaction]
+    recipient_date_pair = defaultdict(list)
+
+
+    with open(input_file_path, 'r', buffering=-1) as input_file:
+        for line in input_file:
+            process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_zip)
+
+    # Write to medianvals_by_date.txt
+    with open(output_file_path_by_date, 'w') as output_file_date:
+        for key in sorted(recipient_date_pair.keys()):
+            val = recipient_date_pair[key]
+            if val:
+                val.sort()
+
+                recipient, date = key[0], key[1]
+                # Convert date from YYYYMMDD back to MMDDYYYY
+                date = date[4:] + date[:4]
+
+                total_num_of_tran, total_amt_of_tran = len(val), sum(val)
+                if int(total_amt_of_tran) == total_amt_of_tran:
+                    total_amt_of_tran = int(total_amt_of_tran)
+
+                if len(val) % 2:
+                    median = val[len(val)//2]
+                else:
+                    median = (val[len(val)//2-1] + val[len(val)//2])/2
+
+                median = customRound(median)
+
+                output_file_date.write("|".join(
+                                                [recipient, date, str(median),
+                                                str(total_num_of_tran), str(total_amt_of_tran)]
+                                        )+"\n")
 
 def process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_zip):
     """
@@ -172,7 +217,6 @@ def process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_z
         # We will deal with it at the end of the program.
         recipient_date_pair[(data[0],data[2])].append(data[3])
 
-
 def is_valid_date(s):
     """
         Returns True if s is a valid MMDDYYYY format, False otherwise
@@ -196,55 +240,6 @@ def customRound(num):
     """
     result = ceil(num) if (num%1) >= 0.5 else round(num)
     return int(result)
-
-
-def main_func(input_file_path, output_file_path_by_zip, output_file_path_by_date):
-    """
-        Main function.
-        1. Read the input file from input_file_path, line by line.
-        2. For each line read, adopt the process() function to parse it.
-        3. After recording all lines, analyze and write the result to medianvals_by_date.txt
-    """
-    # This dictionary stores all the donations to a (CMTE_ID, ZIPCODE) pair.
-    # Key: (CMTE_ID, ZIPCODE), Value: MedianList
-    recipient_zip_pair = defaultdict(MedianList)
-
-    # This dictionary stores all the donations to a (CMTE_ID, Date) pair.
-    # Key: (CMTE_ID, DATE), Value: [transaction]
-    recipient_date_pair = defaultdict(list)
-
-
-    with open(input_file_path, 'r', buffering=-1) as input_file:
-        for line in input_file:
-            process(line, recipient_zip_pair, recipient_date_pair, output_file_path_by_zip)
-
-    # Write to medianvals_by_date.txt
-    with open(output_file_path_by_date, 'w') as output_file_date:
-        for key in sorted(recipient_date_pair.keys()):
-            val = recipient_date_pair[key]
-            if val:
-                val.sort()
-
-                recipient, date = key[0], key[1]
-                # Convert date from YYYYMMDD back to MMDDYYYY
-                date = date[4:] + date[:4]
-
-                total_num_of_tran, total_amt_of_tran = len(val), sum(val)
-                if int(total_amt_of_tran) == total_amt_of_tran:
-                    total_amt_of_tran = int(total_amt_of_tran)
-
-                if len(val) % 2:
-                    median = val[len(val)//2]
-                else:
-                    median = (val[len(val)//2-1] + val[len(val)//2])/2
-
-                median = customRound(median)
-
-                output_file_date.write("|".join(
-                                                [recipient, date, str(median),
-                                                str(total_num_of_tran), str(total_amt_of_tran)]
-                                        )+"\n")
-
 
 if __name__ == "__main__":
     import sys
